@@ -23,18 +23,18 @@ void add_one(string[] time, int idx) {
 
 void main() {
     string[] time = ["00", ":", "00", ":", "00", "\0"];
-    
+
     InitWindow(800, 600, "Timer");
-    
+
     SetTargetFPS(60);
-    
+
     SetWindowState(FLAG_WINDOW_RESIZABLE);
     double seconds_since_start = GetTime();
     while (!WindowShouldClose()) {
         BeginDrawing();
         ClearBackground(VU_BLACK);
         if (cast(int)seconds_since_start < cast(int)GetTime()) {
-            seconds_since_start = GetTime();            
+            seconds_since_start = GetTime();
             add_one(time, SECOND_IDX);
             if (to!int(time[SECOND_IDX]) >= 60) {
                 time[SECOND_IDX] = "00";
@@ -43,7 +43,7 @@ void main() {
             if (to!int(time[MINUTE_IDX]) >= 60) {
                 time[MINUTE_IDX] = "00";
                 add_one(time, HOUR_IDX);
-            }            
+            }
         }
         int timer_font_size = GetScreenWidth() / 6;
         int timer_x = (GetScreenWidth() / 2) - (MeasureText(join(time).ptr, timer_font_size) / 2);
@@ -51,6 +51,6 @@ void main() {
         DrawText(join(time).ptr, timer_x, timer_y, timer_font_size, VU_WHITE);
         EndDrawing();
     }
-    
+
     CloseWindow();
 }
