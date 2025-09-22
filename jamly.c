@@ -19,6 +19,7 @@ typedef struct {
     int hour;
     int minute;
     int second;
+    bool minus;
 } Timer;
 
 Timer timer = {0};
@@ -36,6 +37,7 @@ char *get_timer_text(void) {
     char *minute = get_int_to_string_clock(timer.minute);
     char *second = get_int_to_string_clock(timer.second);
 
+    if (timer.minus) return nob_temp_sprintf("-%s:%s:%s", hour, minute, second);
     return nob_temp_sprintf("%s:%s:%s", hour, minute, second);
 }
 
@@ -75,7 +77,9 @@ void timer_minus_one(void) {
     }
 }
 
-
+void toggle_minus(void) {
+    timer.minus = !timer.minus;
+}
 
 void set_timer(int hour, int minute, int second) {
     timer.hour = hour;
@@ -120,16 +124,25 @@ int main(int argc, char **argv) {
     set_timer((int)*hour, (int)*minute, (int)*second);
 
     // Setup Raylib
+    SetTraceLogLevel(LOG_NONE);
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(800, 600, "Jamly");
-    SetTargetFPS(60);
+    // SetTargetFPS(120);
     while(!WindowShouldClose()) {
         // Logic
         text_timer = get_timer_text();
 
         if ((int)seconds_since_start < (int)GetTime()) {
             seconds_since_start = GetTime();
-            if (*countdown_mode) timer_minus_one();
+            if (*countdown_mode) {
+                if (is_timer_zero()) {
+                    toggle_minus();
+                    *countdown_mode = false;
+                    timer_add_one(); // sets to 0
+                    timer_add_one(); // set to 1
+                }
+                timer_minus_one();
+            }
             else timer_add_one();
         }
 
